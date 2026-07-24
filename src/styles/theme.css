@@ -1,5 +1,74 @@
 @custom-variant dark (&:is(.dark *));
 
+/* =============================================
+   DARK MODE — global overrides
+   ============================================= */
+html.dark body { background-color: #0f172a; color: #e2e8f0; }
+
+html.dark .bg-white      { background-color: #1e293b !important; }
+html.dark .bg-gray-50    { background-color: #0f172a !important; }
+html.dark .bg-gray-100   { background-color: #1e293b !important; }
+html.dark .bg-gray-200   { background-color: #334155 !important; }
+
+html.dark .text-gray-900 { color: #f1f5f9 !important; }
+html.dark .text-gray-800 { color: #e2e8f0 !important; }
+html.dark .text-gray-700 { color: #cbd5e1 !important; }
+html.dark .text-gray-600 { color: #94a3b8 !important; }
+html.dark .text-gray-500 { color: #64748b !important; }
+html.dark .text-gray-400 { color: #475569 !important; }
+
+html.dark .border-gray-50  { border-color: #1e293b !important; }
+html.dark .border-gray-100 { border-color: #334155 !important; }
+html.dark .border-gray-200 { border-color: #475569 !important; }
+
+html.dark input:not([class*="bg-green"]):not([class*="bg-blue"]):not([class*="bg-red"]),
+html.dark textarea,
+html.dark select {
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark .shadow-sm  { box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important; }
+html.dark .shadow-md  { box-shadow: 0 4px 8px rgba(0,0,0,0.5) !important; }
+
+/* =============================================
+   COLOR THEMES — sidebar gradient overrides
+   ============================================= */
+[data-color="blue"]   aside { background: linear-gradient(to bottom, #111827, #1e3a8a) !important; }
+[data-color="purple"] aside { background: linear-gradient(to bottom, #111827, #3b0764) !important; }
+[data-color="teal"]   aside { background: linear-gradient(to bottom, #111827, #042f2e) !important; }
+[data-color="indigo"] aside { background: linear-gradient(to bottom, #111827, #1e1b4b) !important; }
+
+/* Primary button accent color per theme */
+[data-color="blue"]   .bg-green-600, [data-color="blue"]   .bg-green-500 { background-color: #2563eb !important; }
+[data-color="blue"]   .bg-green-700 { background-color: #1d4ed8 !important; }
+[data-color="blue"]   .text-green-600, [data-color="blue"]   .text-green-700 { color: #2563eb !important; }
+[data-color="blue"]   .border-green-300, [data-color="blue"] .border-green-200 { border-color: #93c5fd !important; }
+[data-color="blue"]   .bg-green-50  { background-color: #eff6ff !important; }
+[data-color="blue"]   .bg-green-100 { background-color: #dbeafe !important; }
+
+[data-color="purple"] .bg-green-600, [data-color="purple"] .bg-green-500 { background-color: #7c3aed !important; }
+[data-color="purple"] .bg-green-700 { background-color: #6d28d9 !important; }
+[data-color="purple"] .text-green-600, [data-color="purple"] .text-green-700 { color: #7c3aed !important; }
+[data-color="purple"] .border-green-300, [data-color="purple"] .border-green-200 { border-color: #c4b5fd !important; }
+[data-color="purple"] .bg-green-50  { background-color: #f5f3ff !important; }
+[data-color="purple"] .bg-green-100 { background-color: #ede9fe !important; }
+
+[data-color="teal"]   .bg-green-600, [data-color="teal"]   .bg-green-500 { background-color: #0d9488 !important; }
+[data-color="teal"]   .bg-green-700 { background-color: #0f766e !important; }
+[data-color="teal"]   .text-green-600, [data-color="teal"]   .text-green-700 { color: #0d9488 !important; }
+[data-color="teal"]   .border-green-300, [data-color="teal"] .border-green-200 { border-color: #5eead4 !important; }
+[data-color="teal"]   .bg-green-50  { background-color: #f0fdfa !important; }
+[data-color="teal"]   .bg-green-100 { background-color: #ccfbf1 !important; }
+
+[data-color="indigo"] .bg-green-600, [data-color="indigo"] .bg-green-500 { background-color: #4338ca !important; }
+[data-color="indigo"] .bg-green-700 { background-color: #3730a3 !important; }
+[data-color="indigo"] .text-green-600, [data-color="indigo"] .text-green-700 { color: #4338ca !important; }
+[data-color="indigo"] .border-green-300, [data-color="indigo"] .border-green-200 { border-color: #a5b4fc !important; }
+[data-color="indigo"] .bg-green-50  { background-color: #eef2ff !important; }
+[data-color="indigo"] .bg-green-100 { background-color: #e0e7ff !important; }
+
 :root {
   --font-size: 16px;
   --background: #ffffff;
