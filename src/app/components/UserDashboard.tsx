@@ -174,7 +174,7 @@ export function UserDashboard() {
   const [selectedProduct, setSelectedProduct] = useState<typeof produkMarket[0] | null>(null);
   const [chatInput, setChatInput] = useState("");
   const [messages, setMessages] = useState([
-    { role: "assistant", text: "Halo Budi! Saya LOOP AI. Tanya seputar jual sampah, harga, atau pickup yuk! 👋" },
+    { role: "assistant", text: "Halo Rakhel! Saya LOOP AI. Tanya seputar jual sampah, harga, atau pickup yuk! 👋" },
   ]);
 
   const filtered = produkMarket.filter(p => {
@@ -250,7 +250,7 @@ export function UserDashboard() {
               {[
                 { label: "Jual Sampah", icon: ShoppingBag, color: "bg-green-50 text-green-600", page: "pasar" },
                 { label: "Request Pickup", icon: Truck, color: "bg-blue-50 text-blue-600", page: "pickup" },
-                { label: "Peta TPS", icon: Map, color: "bg-purple-50 text-purple-600", page: "peta" },
+                { label: "Profil Saya", icon: Package, color: "bg-purple-50 text-purple-600", page: "profil" },
                 { label: "Tanya AI", icon: Sparkles, color: "bg-amber-50 text-amber-600", page: "chat" },
               ].map(a => (
                 <button key={a.label} onClick={() => setPage(a.page as UserPage)}
