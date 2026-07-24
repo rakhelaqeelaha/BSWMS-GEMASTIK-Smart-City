@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useRef, useEffect } from "react";
 import {
-  Home, ShoppingBag, Truck, Map, User, Search, Star,
-  Recycle, Plus, Bell, ArrowUpRight, Leaf, Gift, ChevronRight,
-  Package, Filter, ShoppingCart, X, CheckCircle, Clock, Sparkles, Send
+  Home, ShoppingBag, Truck, User, Search, Star,
+  Recycle, Bell, ArrowUpRight, Leaf, Gift, ChevronRight,
+  Package, ShoppingCart, X, CheckCircle, Sparkles, Send, Bot,
+  RefreshCw
 } from "lucide-react";
 
-type UserPage = "beranda" | "pasar" | "pickup" | "peta" | "profil";
+type UserPage = "beranda" | "pasar" | "pickup" | "chat" | "profil";
 
 const produkMarket = [
   { id: "M001", nama: "Plastik PET Grade A - Bersih", harga: 2500, satuan: "kg", penjual: "CV Daur Ulang Jaya", rating: 4.8, ulasan: 142, stok: 500, kategori: "Plastik", icon: "♻️", terjual: 1240 },
@@ -39,6 +41,128 @@ function getResponse(msg: string) {
   if (l.includes("jual") || l.includes("jual")) return chatResponses.jual;
   if (l.includes("pickup") || l.includes("angkut") || l.includes("ambil")) return chatResponses.pickup;
   return chatResponses.default;
+}
+
+const suggestedQuestions = [
+  "Berapa harga plastik PET saat ini?",
+  "Gimana cara jual sampah di marketplace?",
+  "Cara daftar anggota bank sampah?",
+  "Kapan jadwal pickup minggu ini?",
+  "Tips memilah sampah di rumah?",
+];
+
+function FullChat({
+  messages,
+  setMessages,
+}: {
+  messages: { role: string; text: string }[];
+  setMessages: React.Dispatch<React.SetStateAction<{ role: string; text: string }[]>>;
+}) {
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const send = (text: string) => {
+    if (!text.trim() || loading) return;
+    setMessages(m => [...m, { role: "user", text }]);
+    setInput("");
+    setLoading(true);
+    setTimeout(() => {
+      setMessages(m => [...m, { role: "assistant", text: getResponse(text) }]);
+      setLoading(false);
+    }, 900);
+  };
+
+  return (
+    <div className="flex flex-col h-full pb-20" style={{ minHeight: 0 }}>
+      {/* Chat header */}
+      <div className="bg-gradient-to-r from-green-600 to-emerald-500 px-4 py-3 flex items-center gap-3 shrink-0">
+        <div className="w-9 h-9 bg-white/25 rounded-full flex items-center justify-center">
+          <Sparkles size={18} className="text-white" />
+        </div>
+        <div>
+          <div className="text-white text-sm">LOOP AI</div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 bg-green-300 rounded-full animate-pulse" />
+            <span className="text-green-200 text-xs">Online · Siap membantu</span>
+          </div>
+        </div>
+        <button onClick={() => setMessages([{ role: "assistant", text: "Halo Rakhel! Saya LOOP AI. Ada yang bisa saya bantu?" }])}
+          className="ml-auto p-1.5 bg-white/20 hover:bg-white/30 rounded-xl transition-colors">
+          <RefreshCw size={13} className="text-white" />
+        </button>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3" style={{ minHeight: 0 }}>
+        {messages.map((m, i) => (
+          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+            {m.role === "assistant" && (
+              <div className="w-7 h-7 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shrink-0 mr-2 mt-0.5">
+                <Sparkles size={12} className="text-white" />
+              </div>
+            )}
+            <div className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed ${
+              m.role === "user"
+                ? "bg-green-600 text-white rounded-tr-sm"
+                : "bg-white border border-gray-100 text-gray-800 shadow-sm rounded-tl-sm"
+            }`}>
+              {m.text}
+            </div>
+          </div>
+        ))}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="w-7 h-7 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shrink-0 mr-2">
+              <Sparkles size={12} className="text-white" />
+            </div>
+            <div className="bg-white border border-gray-100 shadow-sm rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
+              {[0, 1, 2].map(d => (
+                <div key={d} className="w-1.5 h-1.5 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: `${d * 0.15}s` }} />
+              ))}
+            </div>
+          </div>
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Suggested questions — only show when few messages */}
+      {messages.length <= 2 && (
+        <div className="px-4 pb-2 shrink-0">
+          <p className="text-xs text-gray-400 mb-2">Pertanyaan umum:</p>
+          <div className="flex flex-wrap gap-1.5">
+            {suggestedQuestions.map(q => (
+              <button key={q} onClick={() => send(q)}
+                className="text-xs bg-green-50 text-green-700 border border-green-200 px-2.5 py-1.5 rounded-xl hover:bg-green-100 transition-colors text-left">
+                {q}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Input */}
+      <div className="px-4 pb-4 shrink-0">
+        <div className="flex gap-2 bg-white border border-gray-200 rounded-2xl px-3 py-2 shadow-sm focus-within:border-green-400 focus-within:ring-2 focus-within:ring-green-500/10">
+          <input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && !e.shiftKey && send(input)}
+            placeholder="Ketik pesan..."
+            className="flex-1 text-xs bg-transparent focus:outline-none text-gray-800 placeholder-gray-400"
+          />
+          <button onClick={() => send(input)} disabled={!input.trim() || loading}
+            className="w-8 h-8 bg-green-600 disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl flex items-center justify-center hover:bg-green-700 transition-colors shrink-0">
+            <Send size={13} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function UserDashboard() {
@@ -77,10 +201,10 @@ export function UserDashboard() {
 
   const navItems: Array<{ id: UserPage; label: string; icon: any }> = [
     { id: "beranda", label: "Beranda", icon: Home },
-    { id: "pasar", label: "Pasar", icon: ShoppingBag },
-    { id: "pickup", label: "Pickup", icon: Truck },
-    { id: "peta", label: "Peta", icon: Map },
-    { id: "profil", label: "Profil", icon: User },
+    { id: "pasar",   label: "Pasar",   icon: ShoppingBag },
+    { id: "pickup",  label: "Pickup",  icon: Truck },
+    { id: "chat",    label: "AI Chat", icon: Bot },
+    { id: "profil",  label: "Profil",  icon: User },
   ];
 
   return (
@@ -99,7 +223,7 @@ export function UserDashboard() {
                 </div>
                 <div>
                   <div className="text-white/70 text-xs">Hai,</div>
-                  <div className="text-white text-sm">Budi Santoso 👋</div>
+                  <div className="text-white text-sm">Rakhel Imut 👋</div>
                 </div>
               </div>
               <button className="relative w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
@@ -127,7 +251,7 @@ export function UserDashboard() {
                 { label: "Jual Sampah", icon: ShoppingBag, color: "bg-green-50 text-green-600", page: "pasar" },
                 { label: "Request Pickup", icon: Truck, color: "bg-blue-50 text-blue-600", page: "pickup" },
                 { label: "Peta TPS", icon: Map, color: "bg-purple-50 text-purple-600", page: "peta" },
-                { label: "Tanya AI", icon: Sparkles, color: "bg-amber-50 text-amber-600", page: "beranda" },
+                { label: "Tanya AI", icon: Sparkles, color: "bg-amber-50 text-amber-600", page: "chat" },
               ].map(a => (
                 <button key={a.label} onClick={() => setPage(a.page as UserPage)}
                   className="flex flex-col items-center gap-1.5 bg-white rounded-2xl p-3 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
@@ -323,38 +447,9 @@ export function UserDashboard() {
         </div>
       )}
 
-      {/* ===== PETA ===== */}
-      {page === "peta" && (
-        <div className="flex-1 flex flex-col pb-20 p-4">
-          <h2 className="text-gray-900 mb-3">Peta & Lokasi TPS</h2>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col items-center justify-center text-center" style={{ minHeight: "300px" }}>
-            <Map size={48} className="text-gray-200 mb-3" />
-            <p className="text-sm text-gray-500 mb-1">Peta Tracker Tersedia di Tampilan Admin</p>
-            <p className="text-xs text-gray-400">Buka menu "Peta & Tracker" dari halaman utama</p>
-          </div>
-          <div className="mt-4 space-y-2">
-            {[
-              { nama: "TPS 3R Bogor Tengah", jarak: "0.8 km", kapasitas: 82, status: "beroperasi" },
-              { nama: "TPS 3R Bogor Utara", jarak: "1.4 km", kapasitas: 55, status: "beroperasi" },
-              { nama: "Bank Sampah Sejahtera", jarak: "0.3 km", kapasitas: null, status: "aktif" },
-            ].map(t => (
-              <div key={t.nama} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`w-2.5 h-2.5 rounded-full ${t.kapasitas && t.kapasitas > 80 ? "bg-red-500" : "bg-green-500"}`} />
-                  <div>
-                    <div className="text-xs text-gray-800">{t.nama}</div>
-                    <div className="text-xs text-gray-400">{t.jarak} dari lokasi Anda</div>
-                  </div>
-                </div>
-                {t.kapasitas && (
-                  <div className={`text-xs px-2 py-1 rounded-full ${t.kapasitas > 80 ? "bg-red-100 text-red-600" : "bg-green-100 text-green-700"}`}>
-                    {t.kapasitas}%
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* ===== LOOP AI CHAT ===== */}
+      {page === "chat" && (
+        <FullChat messages={messages} setMessages={setMessages} />
       )}
 
       {/* ===== PROFIL ===== */}
@@ -364,7 +459,7 @@ export function UserDashboard() {
             <div className="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-3">
               <User size={28} className="text-white" />
             </div>
-            <div className="text-white text-base">Budi Santoso</div>
+            <div className="text-white text-base">Rakhel Imut</div>
             <div className="text-green-200 text-xs mt-0.5">Anggota Bank Sampah Sejahtera · BS-0142</div>
             <div className="flex justify-center gap-4 mt-3">
               {[{ label: "Setoran", value: "18x" }, { label: "Total", value: "71.3kg" }, { label: "Poin", value: "1.420" }].map(s => (
